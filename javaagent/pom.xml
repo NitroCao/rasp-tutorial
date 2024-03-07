@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.nitroc</groupId>
+        <artifactId>rasp-tutorial</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>javaagent</artifactId>
+    <packaging>jar</packaging>
+
+    <name>javaagent</name>
+    <url>https://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <shade.prefix>${project.groupId}</shade.prefix>
+        <config.prefix>${project.groupId}</config.prefix>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.30.2-GA</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.12</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-assembly-plugin</artifactId>-->
+<!--                <version>3.6.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>single</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <descriptorRefs>-->
+<!--                        <descriptorRef>jar-with-dependencies</descriptorRef>-->
+<!--                    </descriptorRefs>-->
+<!--                    <archive>-->
+<!--                        <manifestEntries>-->
+<!--                            <Premain-Class>org.nitroc.javaagent.DemoAgent</Premain-Class>-->
+<!--                            <Agent-Class>org.nitroc.javaagent.DemoAgent</Agent-Class>-->
+<!--                            <Main-Class>org.nitroc.javaagent.App</Main-Class>-->
+<!--                            <Can-Redefine-Classes>true</Can-Redefine-Classes>-->
+<!--                            <Can-Retransform-Classes>true</Can-Retransform-Classes>-->
+<!--                        </manifestEntries>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.5.2</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <filters>
+                                        <filter>
+                                            <artifact>org.nitroc:*</artifact>
+                                            <includes>
+                                                <include>**</include>
+                                            </includes>
+                                        </filter>
+                                        <!-- Exclude files under META-INF directory in third-party libraries to prevent Maven from complaining. -->
+                                        <filter>
+                                            <artifact>*:*</artifact>
+                                            <excludes>
+                                                <exclude>module-info.class</exclude>
+                                                <exclude>META-INF/*.SF</exclude>
+                                                <exclude>META-INF/*.DSA</exclude>
+                                                <exclude>META-INF/*.MF</exclude>
+                                            </excludes>
+                                        </filter>
+                                    </filters>
+                                    <transformers>
+                                        <transformer
+                                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <!-- Let Maven generate MANIFEST.MF file for our agent JAR. -->
+                                            <manifestEntries>
+                                                <Premain-Class>org.nitroc.javaagent.DemoAgent</Premain-Class>
+                                                <Agent-Class>org.nitroc.javaagent.DemoAgent</Agent-Class>
+                                                <Main-Class>org.nitroc.javaagent.App</Main-Class>
+                                                <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                                                <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                                            </manifestEntries>
+                                        </transformer>
+                                    </transformers>
+
+                                    <!-- Target Java projects to be injected may also include these third-party libraries,
+                                            so we need to relocate them to prevent duplicate dependencies.
+                                     -->
+                                    <relocations>
+                                        <relocation>
+                                            <pattern>org.slf4j</pattern>
+                                            <shadedPattern>${shade.prefix}.shaded.org.slf4j</shadedPattern>
+                                        </relocation>
+                                        <relocation>
+                                            <pattern>ch.qos.logback</pattern>
+                                            <shadedPattern>${shade.prefix}.shaded.ch.qos.logback</shadedPattern>
+                                        </relocation>
+                                    </relocations>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+    </build>
+</project>
