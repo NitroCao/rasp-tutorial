@@ -4,16 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.instrument.Instrumentation;
+import java.util.concurrent.TimeUnit;
 
 public class DemoAgent {
+    private boolean stop = false;
     private static final Logger logger = LoggerFactory.getLogger(DemoAgent.class);
-    public static void premain(String args, Instrumentation inst) {
-        logger.info("[DemoAgent] in premain method");
-        inst.addTransformer(new Transformer(), true);
+
+    public void start(Instrumentation inst) {
+        logger.info("DemoAgent started");
+//        try {
+//            while (!stop) {
+//                TimeUnit.SECONDS.sleep(4);
+//            }
+//        } catch (InterruptedException e) {
+//            logger.info("interrupt signal received");
+//        }
     }
 
-    public static void agentmain(String args, Instrumentation inst) {
-        logger.info("[DemoAgent] in agentmain method");
-        inst.addTransformer(new Transformer(), true);
+    public void stop(Instrumentation inst) {
+        stop = true;
     }
 }
