@@ -4,21 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.instrument.Instrumentation;
-import java.util.concurrent.TimeUnit;
 
 public class DemoAgent {
-    private boolean stop = false;
     private static final Logger logger = LoggerFactory.getLogger(DemoAgent.class);
+    private boolean stop = false;
 
     public void start(Instrumentation inst) {
         logger.info("DemoAgent started");
-//        try {
-//            while (!stop) {
-//                TimeUnit.SECONDS.sleep(4);
-//            }
-//        } catch (InterruptedException e) {
-//            logger.info("interrupt signal received");
-//        }
+        Transformer transformer = new Transformer();
+        inst.addTransformer(transformer);
     }
 
     public void stop(Instrumentation inst) {
