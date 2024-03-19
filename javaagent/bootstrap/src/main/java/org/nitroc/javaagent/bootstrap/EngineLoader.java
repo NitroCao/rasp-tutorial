@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 
 public class EngineLoader {
     private static final String ENGINE_JAR = "engine.jar";
-    private static final String ENGINE_CLASS = "org.nitroc.javaagent.DemoAgent";
+    private static final String ENGINE_CLASS = "org.nitroc.javaagent.engine.DemoAgent";
     public static ClassLoader systemClassLoader;
 
     static {

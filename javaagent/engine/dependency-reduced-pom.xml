@@ -41,9 +41,9 @@
               <transformers>
                 <transformer>
                   <manifestEntries>
-                    <Premain-Class>org.nitroc.javaagent.DemoAgent</Premain-Class>
-                    <Agent-Class>org.nitroc.javaagent.DemoAgent</Agent-Class>
-                    <Main-Class>org.nitroc.javaagent.App</Main-Class>
+                    <Premain-Class>org.nitroc.javaagent.engine.DemoAgent</Premain-Class>
+                    <Agent-Class>org.nitroc.javaagent.engine.DemoAgent</Agent-Class>
+                    <Main-Class>org.nitroc.javaagent.engine.App</Main-Class>
                     <Can-Redefine-Classes>true</Can-Redefine-Classes>
                     <Can-Retransform-Classes>true</Can-Retransform-Classes>
                   </manifestEntries>

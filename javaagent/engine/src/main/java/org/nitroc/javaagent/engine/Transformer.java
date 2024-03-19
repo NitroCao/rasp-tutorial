@@ -1,4 +1,4 @@
-package org.nitroc.javaagent;
+package org.nitroc.javaagent.engine;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -24,8 +24,8 @@ public class Transformer implements ClassFileTransformer {
         try {
             CtClass ctClass = classPool.get(hookClassName.replace("/", "."));
             CtConstructor[] initMethod = ctClass.getDeclaredConstructors();
-//            initMethod[0].insertBefore("org.nitroc.javaagent.bootstrap.EngineLoader.systemClassLoader.loadClass(\"org.nitroc.javaagent.ProcessHook\").getMethod(\"check\", new Class[]{Class.forName(byte[].class.getName())}).invoke(null, new Object[]{$1});");
-            initMethod[0].insertBefore("org.nitroc.javaagent.ProcessHook.check($1);");
+//            initMethod[0].insertBefore("org.nitroc.javaagent.bootstrap.EngineLoader.systemClassLoader.loadClass(\"org.nitroc.javaagent.engine.ProcessHook\").getMethod(\"check\", new Class[]{Class.forName(byte[].class.getName())}).invoke(null, new Object[]{$1});");
+            initMethod[0].insertBefore("org.nitroc.javaagent.engine.ProcessHook.check($1);");
             return ctClass.toBytecode();
         } catch (Exception e) {
             logger.error("[TOYRASP] failed to hook {}", hookClassName, e);

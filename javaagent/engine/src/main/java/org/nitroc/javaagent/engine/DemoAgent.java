@@ -1,4 +1,4 @@
-package org.nitroc.javaagent;
+package org.nitroc.javaagent.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

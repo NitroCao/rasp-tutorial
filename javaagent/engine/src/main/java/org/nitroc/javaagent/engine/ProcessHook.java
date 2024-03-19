@@ -1,4 +1,4 @@
-package org.nitroc.javaagent;
+package org.nitroc.javaagent.engine;
 
 public class ProcessHook {
     public static void check(byte[] command) {
