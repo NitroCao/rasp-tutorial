@@ -1,35 +1,48 @@
 package org.nitroc.javaagent.engine;
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.nitroc.javaagent.engine.Hook.HookBase;
+import org.nitroc.javaagent.engine.Hook.ProcessHook;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
+import java.util.HashSet;
 
 public class Transformer implements ClassFileTransformer {
-    private static final Logger logger = LoggerFactory.getLogger(Transformer.class);
+    private final HashSet<HookBase> hooks;
+
+    public Transformer() {
+        hooks = initHooks();
+    }
+
+    private static HashSet<HookBase> initHooks() {
+        HashSet<HookBase> hooks = new HashSet<>();
+        hooks.add(new ProcessHook());
+
+        return hooks;
+    }
 
     @Override
     public byte[] transform(ClassLoader loader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {
-        String hookClassName = "java/lang/ProcessImpl";
-        if (!className.equals(hookClassName)) {
+        HookBase hook = lookupHook(className);
+        if (hook == null) {
             return ClassFileTransformer.super.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
         }
 
-        ClassPool classPool = ClassPool.getDefault();
-        try {
-            CtClass ctClass = classPool.get(hookClassName.replace("/", "."));
-            CtConstructor[] initMethod = ctClass.getDeclaredConstructors();
-//            initMethod[0].insertBefore("org.nitroc.javaagent.bootstrap.EngineLoader.systemClassLoader.loadClass(\"org.nitroc.javaagent.engine.ProcessHook\").getMethod(\"check\", new Class[]{Class.forName(byte[].class.getName())}).invoke(null, new Object[]{$1});");
-            initMethod[0].insertBefore("org.nitroc.javaagent.engine.ProcessHook.check($1);");
-            return ctClass.toBytecode();
-        } catch (Exception e) {
-            logger.error("[TOYRASP] failed to hook {}", hookClassName, e);
+        byte[] code = hook.hook();
+        if (code == null) {
+            return ClassFileTransformer.super.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
         }
-        return ClassFileTransformer.super.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+        return code;
+    }
+    
+    private HookBase lookupHook(String className) {
+        for (HookBase hook : hooks) {
+            if (hook.isTargetClass(className)) {
+                return hook;
+            }
+        }
+        
+        return null;
     }
 }
