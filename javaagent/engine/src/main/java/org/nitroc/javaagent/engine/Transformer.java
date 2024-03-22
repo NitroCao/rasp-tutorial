@@ -2,6 +2,7 @@ package org.nitroc.javaagent.engine;
 
 import org.nitroc.javaagent.engine.Hook.HookBase;
 import org.nitroc.javaagent.engine.Hook.ProcessHook;
+import org.nitroc.javaagent.engine.Hook.server.tomcat.HttpHook;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
@@ -17,6 +18,7 @@ public class Transformer implements ClassFileTransformer {
     private static HashSet<HookBase> initHooks() {
         HashSet<HookBase> hooks = new HashSet<>();
         hooks.add(new ProcessHook());
+        hooks.add(new HttpHook());
 
         return hooks;
     }
