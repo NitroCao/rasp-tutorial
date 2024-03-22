@@ -24,7 +24,7 @@ public class HttpHook extends HookBase {
         Class<?> requestClass = classLoader.loadClass("org.apache.catalina.connector.Request");
         Method method = requestClass.getMethod("getRequestURI");
         String requestUri = (String) method.invoke(request);
-        System.out.printf("[TOYRASP] request uri: %s\n", requestUri);
+        logger.info("[TOYRASP] request uri: {}", requestUri);
     }
 
     @Override

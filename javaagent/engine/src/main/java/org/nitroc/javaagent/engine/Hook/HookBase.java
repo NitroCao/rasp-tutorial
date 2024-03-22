@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class HookBase {
-    protected Logger logger = LoggerFactory.getLogger(HookBase.class.getName());
+    protected static Logger logger = LoggerFactory.getLogger(HookBase.class.getName());
 
     public abstract boolean enabled();
 

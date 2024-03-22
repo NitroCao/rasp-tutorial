@@ -9,8 +9,8 @@ public class ProcessHook extends HookBase {
 
     public static void check(byte[] command) {
         if (command != null && command.length > 0) {
-            String exePath = new String(command, 0, command.length - 1);
-            System.out.println(exePath);
+            String exeName = new String(command, 0, command.length - 1);
+            logger.info("[TOYRASP] executable name: {}", exeName);
         }
     }
 
@@ -44,7 +44,7 @@ public class ProcessHook extends HookBase {
             constructors[0].insertBefore(createHookSource());
             return ctClass.toBytecode();
         } catch (Exception e) {
-           logger.error("[TOYRASP] failed to hook {}", ProcessHook.class.getCanonicalName(), e);
+            logger.error("[TOYRASP] failed to hook {}", ProcessHook.class.getCanonicalName(), e);
         }
 
         return null;
