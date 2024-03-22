@@ -4,9 +4,9 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import org.nitroc.javaagent.engine.Hook.HookBase;
+import org.nitroc.javaagent.engine.reflection.Reflection;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class HttpHook extends HookBase {
     private static final String targetClassName = "org/apache/catalina/core/StandardWrapperValve";
@@ -16,14 +16,8 @@ public class HttpHook extends HookBase {
             throw new NullPointerException("null request");
         }
 
-        ClassLoader classLoader = request.getClass().getClassLoader();
-        if (classLoader == null) {
-            classLoader = ClassLoader.getSystemClassLoader();
-        }
-
-        Class<?> requestClass = classLoader.loadClass("org.apache.catalina.connector.Request");
-        Method method = requestClass.getMethod("getRequestURI");
-        String requestUri = (String) method.invoke(request);
+        String requestUri = (String) Reflection.invokeMethod(request,
+                "org.apache.catalina.connector.Request", "getRequestURI", new Class[]{});
         logger.info("[TOYRASP] request uri: {}", requestUri);
     }
 
